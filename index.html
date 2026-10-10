@@ -636,11 +636,27 @@ async function handleFiles(fileList) {
     try {
       const text = await file.text();
       const json = JSON.parse(text);
+      // Only keep symbols whose value is a list of price bars. Anything else
+      // (e.g. a strategy_scan_*.json report) must NOT be stored as a pack,
+      // or it would replace a real pack saved under the same date.
+      const bars = {};
+      if (json && typeof json === "object" && !Array.isArray(json)) {
+        for (const [sym, v] of Object.entries(json)) {
+          if (Array.isArray(v) && v.length >= 1 && v[0] && typeof v[0] === "object" &&
+              (v[0].close !== undefined || v[0].Close !== undefined || v[0]["4. close"] !== undefined)) {
+            bars[sym] = v;
+          }
+        }
+      }
+      if (!Object.keys(bars).length) {
+        showToast(`Not a stock pack: ${file.name}`);
+        continue;
+      }
       let packDate = new Date().toISOString().slice(0,10);
-      const m = file.name.match(/(\d{4}-\d{2}-\d{2})/);
-      if (m) packDate = m[1];
-      await savePack(packDate, json);
-      showToast(`Loaded ${file.name}`);
+      const m = file.name.match(/(\d{4})-(\d{2})-(\d{2})/) || file.name.match(/(\d{4})(\d{2})(\d{2})/);
+      if (m) packDate = `${m[1]}-${m[2]}-${m[3]}`;
+      await savePack(packDate, bars);
+      showToast(`Loaded ${file.name} (${Object.keys(bars).length} symbols)`);
     } catch (err) {
       showToast(`Failed: ${file.name}`);
       console.error(err);
