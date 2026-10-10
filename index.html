@@ -355,7 +355,7 @@
       <div style="font-weight:700; color:var(--ink); margin-bottom:6px;">Tap to import daily pack</div>
       <div style="font-size:13px; margin-bottom:14px;">Drop <code>stock_pack_YYYY-MM-DD.json</code> files here</div>
       <button class="btn btn-primary" id="pick-files">Choose Files</button>
-      <input type="file" id="file-input" accept=".json,application/json" multiple>
+      <input type="file" id="file-input" multiple>
     </div>
     <div style="display:flex; justify-content:space-between; align-items:center;">
       <h3 style="margin:0; font-size:16px;">Available Packs</h3>
@@ -695,17 +695,40 @@ document.getElementById("clear-all").addEventListener("click", async () => {
    Card / Training Logic
    ========================= */
 function normalizeDay(d) {
+  const num = (...vals) => {
+    for (const v of vals) { if (v !== undefined && v !== null && v !== "" && isFinite(+v)) return +v; }
+    return NaN;
+  };
+  const close = num(d.close, d.Close, d.adj_close, d["4. close"]);
+  // Packs with close-only bars still need a drawable candle: fall back to close.
+  const open = num(d.open, d.Open, d["1. open"]);
+  const high = num(d.high, d.High, d["2. high"]);
+  const low = num(d.low, d.Low, d["3. low"]);
+  const o = isNaN(open) ? close : open;
+  const h = isNaN(high) ? Math.max(o, close) : high;
+  const l = isNaN(low) ? Math.min(o, close) : low;
+  const opt = (v) => (v !== undefined && v !== null && isFinite(+v)) ? +v : null;
   return {
     date: d.date || d.Date,
-    open: + (d.open || d.Open || d["1. open"] || d.open),
-    high: + (d.high || d.High || d["2. high"] || d.high),
-    low: + (d.low || d.Low || d["3. low"] || d.low),
-    close: + (d.close || d.Close || d["4. close"] || d.close),
-    volume: + (d.volume || d.Volume || d["6. volume"] || d.volume || 0),
-    sma20: d.sma20 !== undefined ? +d.sma20 : null,
-    sma50: d.sma50 !== undefined ? +d.sma50 : null,
-    rsi14: d.rsi14 !== undefined ? +d.rsi14 : null,
+    open: o, high: h, low: l, close,
+    volume: num(d.volume, d.Volume, d["6. volume"]) || 0,
+    sma20: opt(d.sma20),
+    sma50: opt(d.sma50),
+    rsi14: opt(d.rsi14),
   };
+}
+
+// Fill SMA20/SMA50 from closes when the pack didn't ship them.
+function fillSma(days) {
+  for (const [key, n] of [["sma20", 20], ["sma50", 50]]) {
+    if (days.some(d => d[key] !== null)) continue;
+    let sum = 0;
+    for (let i = 0; i < days.length; i++) {
+      sum += days[i].close;
+      if (i >= n) sum -= days[i - n].close;
+      days[i][key] = i >= n - 1 ? sum / n : null;
+    }
+  }
 }
 
 function classifySetup(days, cutoff) {
@@ -760,7 +783,16 @@ function prepareCard() {
   const rawDays = Array.isArray(pack.data[symbol]) ? pack.data[symbol] : Object.values(pack.data[symbol]);
   const days = rawDays.map(normalizeDay).filter(d => d.close > 0);
   days.sort((a,b) => new Date(a.date) - new Date(b.date));
-  if (days.length < 30) return prepareCard();
+  fillSma(days);
+  if (days.length < 30) {
+    // Skip short series, but never recurse forever if every symbol is short.
+    prepareCard._tries = (prepareCard._tries || 0) + 1;
+    if (prepareCard._tries < 25) return prepareCard();
+    prepareCard._tries = 0;
+    showToast("Packs need at least 30 days of bars per symbol");
+    return;
+  }
+  prepareCard._tries = 0;
   const cutoff = pickCutoff(days);
   const setup = classifySetup(days, cutoff);
   const actual = actualDirection(days, cutoff, 5);

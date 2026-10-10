@@ -1,5 +1,5 @@
 // Trading Trainer service worker: cache the app shell so it opens with no signal.
-const CACHE = "tt-shell-v1";
+const CACHE = "tt-shell-v2";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-180.png", "./icon-512.png"];
 
 self.addEventListener("install", (e) => {
