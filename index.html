@@ -291,6 +291,58 @@
   .swipe-hint.up { top: auto; bottom: 80px; left: 50%; transform: translateX(-50%) scale(0.9); background: var(--accent-invalid); color: #fff; }
   .swipe-hint.show { opacity: 1; transform: translateY(-50%) scale(1); }
   .swipe-hint.up.show { transform: translateX(-50%) scale(1); }
+  /* ---- Review (cockpit) ---- */
+  .rv-chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; flex-shrink: 0; }
+  .rv-chip {
+    flex: 0 0 auto; background: var(--surface); border: 1px solid var(--line); color: var(--ink);
+    border-radius: 12px; padding: 8px 12px; text-align: left; font-size: 12px; min-width: 84px;
+  }
+  .rv-chip b { display: block; font-size: 14px; }
+  .rv-chip span { color: var(--muted); }
+  .rv-chip.active { border-color: #2563eb; background: rgba(37,99,235,0.15); }
+  .rv-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; }
+  .rv-head .nm { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .rv-head .px { text-align: right; font-size: 22px; font-weight: 800; }
+  .rv-head .px small { display: block; font-size: 12px; font-weight: 700; }
+  .rv-flags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .rv-flag { font-size: 11px; padding: 3px 8px; border-radius: 999px; background: rgba(245,158,11,0.12);
+    color: var(--accent-neutral); border: 1px solid rgba(245,158,11,0.3); }
+  .rv-seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; align-self: flex-start; }
+  .rv-seg button { background: var(--surface); color: var(--muted); border: 0; padding: 7px 14px; font-size: 13px; font-weight: 600; }
+  .rv-seg button.active { background: var(--surface-2); color: var(--ink); }
+  .rv-readout { font-size: 12px; color: var(--muted); min-height: 32px; line-height: 1.4; font-variant-numeric: tabular-nums; }
+  .rv-chart { position: relative; height: 380px; background: #0b0f19; border: 1px solid var(--line);
+    border-radius: 12px; flex-shrink: 0; }
+  .rv-chart canvas { display: block; touch-action: pan-y; }
+  .rv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .rv-m { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+  .rv-m .l { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+  .rv-m .v { font-size: 15px; font-weight: 700; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .rv-pos { color: var(--accent-bull); } .rv-neg { color: var(--accent-bear); }
+  details.rv-sec { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 0 12px; flex-shrink: 0; }
+  details.rv-sec > summary { padding: 12px 0; font-weight: 700; font-size: 14px; cursor: pointer; }
+  details.rv-sec[open] > summary { border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+  .rv-body { padding-bottom: 12px; font-size: 13px; }
+  .rv-scroll { overflow-x: auto; }
+  table.rv-t { border-collapse: collapse; font-size: 12px; width: 100%; font-variant-numeric: tabular-nums; }
+  table.rv-t th, table.rv-t td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+  table.rv-t th:first-child, table.rv-t td:first-child { text-align: left; position: sticky; left: 0; background: var(--surface); }
+  table.rv-t th { color: var(--muted); font-weight: 600; font-size: 11px; }
+  table.rv-kv { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.rv-kv td { padding: 5px 0; border-bottom: 1px solid var(--line); }
+  table.rv-kv td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+  .rv-news { padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .rv-news .t { font-size: 13px; line-height: 1.35; }
+  .rv-news .m { font-size: 11px; color: var(--muted); margin-top: 3px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .rv-note { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.4; }
+  .rv-call { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; flex-shrink: 0; }
+  .rv-call input[type=text] { width: 100%; margin: 10px 0; background: var(--bg); color: var(--ink);
+    border: 1px solid var(--line); border-radius: 10px; padding: 10px; font-size: 14px; }
+  .rv-call .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .rv-callrow { display: flex; justify-content: space-between; gap: 8px; align-items: center; padding: 8px 0;
+    border-top: 1px solid var(--line); font-size: 12px; }
+  .rv-tools { display: flex; gap: 8px; flex-shrink: 0; }
+  .rv-tools .btn { flex: 1; padding: 8px 10px; font-size: 12px; }
   @media (min-width: 390px) {
     .header h1 { font-size: 20px; }
     .symbol { font-size: 22px; }
@@ -395,10 +447,23 @@
     <div class="empty" id="history-empty" style="display:none;">No classifications yet. Start training!</div>
   </div>
 
+  <div class="view" id="view-review">
+    <div class="rv-chips" id="rv-chips"></div>
+    <div class="rv-tools">
+      <button class="btn" id="rv-export-md">Export training .md</button>
+      <button class="btn" id="rv-export-json">Export .json</button>
+    </div>
+    <div id="rv-detail"></div>
+  </div>
+
   <div class="bottom-nav">
     <button class="nav-btn active" data-view="train">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l7 4v6c0 5.5-3.8 10.7-7 12-3.2-1.3-7-6.5-7-12V6l7-4z"/></svg>
       Train
+    </button>
+    <button class="nav-btn" data-view="review">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 15l4-5 3 3 5-7"/></svg>
+      Review
     </button>
     <button class="nav-btn" data-view="upload">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
@@ -427,6 +492,8 @@ const MEM = {
   packs: [],
   classifications: [],
   stats: {},
+  reports: [],
+  calls: [],
   nextId: 1,
 };
 
@@ -438,6 +505,8 @@ function memLoad() {
     MEM.packs = o.packs || [];
     MEM.classifications = o.classifications || [];
     MEM.stats = o.stats || {};
+    MEM.reports = o.reports || [];
+    MEM.calls = o.calls || [];
     MEM.nextId = o.nextId || 1;
   } catch (e) { console.warn("localStorage load failed", e); }
 }
@@ -454,7 +523,7 @@ function memSave() {
 function openDB() {
   return new Promise((res, rej) => {
     const timer = setTimeout(() => rej(new Error("IndexedDB open timed out")), 2000);
-    const req = indexedDB.open("TradingTrainerDB", 1);
+    const req = indexedDB.open("TradingTrainerDB", 2);
     req.onblocked = () => { clearTimeout(timer); rej(new Error("IndexedDB blocked")); };
     req.onerror = () => { clearTimeout(timer); rej(req.error); };
     req.onsuccess = () => { clearTimeout(timer); res(req.result); };
@@ -466,6 +535,8 @@ function openDB() {
         c.createIndex("user_id", "user_id", { unique: false });
       }
       if (!d.objectStoreNames.contains("stats")) d.createObjectStore("stats", { keyPath: "key" });
+      if (!d.objectStoreNames.contains("reports")) d.createObjectStore("reports", { keyPath: "key" });
+      if (!d.objectStoreNames.contains("calls")) d.createObjectStore("calls", { keyPath: "id", autoIncrement: true });
     };
   });
 }
@@ -589,6 +660,7 @@ let cardStartTime = 0;
    ========================= */
 const views = {
   train: document.getElementById("view-train"),
+  review: document.getElementById("view-review"),
   upload: document.getElementById("view-upload"),
   stats: document.getElementById("view-stats"),
 };
@@ -604,6 +676,7 @@ function switchView(name) {
   navs.forEach(n => n.classList.toggle("active", n.dataset.view === name));
   if (name === "stats") renderStats();
   if (name === "upload") renderPackList();
+  if (name === "review") renderReview();
 }
 navs.forEach(n => n.addEventListener("click", () => switchView(n.dataset.view)));
 
@@ -635,6 +708,16 @@ async function handleFiles(fileList) {
   for (const file of fileList) {
     try {
       const text = await file.text();
+      // Numeric pack (.md) -> Review tab
+      if (/^\s*#\s+\S+\s+numeric pack/i.test(text)) {
+        const rep = parseNumericPack(text);
+        if (!rep) throw new Error("unreadable numeric pack");
+        const L = (rep.sections.latest && rep.sections.latest.kv) || {};
+        const session = L.indicator_session || rep.top.daily_last_refreshed || "";
+        await storePut("reports", { key: rep.symbol + "|" + session, symbol: rep.symbol, session, report: rep, savedAt: Date.now() });
+        showToast(`Loaded ${rep.symbol} report (${session})`);
+        continue;
+      }
       const json = JSON.parse(text);
       // Only keep symbols whose value is a list of price bars. Anything else
       // (e.g. a strategy_scan_*.json report) must NOT be stored as a pack,
@@ -1041,6 +1124,764 @@ function updateHeader() {
   document.getElementById("h-score").textContent = score;
   document.getElementById("h-streak").textContent = streak;
 }
+
+/* =========================
+   Review: generic stores, numeric-pack (.md) parser, cockpit view
+   Descriptive only: no score, no verdict. The call is the user's.
+   ========================= */
+const KEY_PATH = { reports: "key", calls: "id" };
+
+async function storePut(store, rec) {
+  if (useIDB && db) {
+    const tx = db.transaction(store, "readwrite");
+    tx.objectStore(store).put(rec);
+    await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = () => rej(tx.error); });
+    return;
+  }
+  const kp = KEY_PATH[store];
+  if (kp === "id" && rec.id === undefined) rec.id = MEM.nextId++;
+  const arr = MEM[store];
+  const i = arr.findIndex(r => r[kp] === rec[kp]);
+  if (i >= 0) arr[i] = rec; else arr.push(rec);
+  memSave();
+}
+
+async function storeAll(store) {
+  if (useIDB && db) {
+    return new Promise((res, rej) => {
+      const r = db.transaction(store, "readonly").objectStore(store).getAll();
+      r.onsuccess = () => res(r.result);
+      r.onerror = () => rej(r.error);
+    });
+  }
+  return [...(MEM[store] || [])];
+}
+
+async function storeDelete(store, key) {
+  if (useIDB && db) {
+    const tx = db.transaction(store, "readwrite");
+    tx.objectStore(store).delete(key);
+    await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = () => rej(tx.error); });
+    return;
+  }
+  const kp = KEY_PATH[store];
+  MEM[store] = (MEM[store] || []).filter(r => r[kp] !== key);
+  memSave();
+}
+
+/* ---- numeric pack (.md) parser ---- */
+function parseCsvLine(line) {
+  const out = []; let cur = "", q = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (q) {
+      if (ch === '"') { if (line[i + 1] === '"') { cur += '"'; i++; } else q = false; }
+      else cur += ch;
+    } else if (ch === '"') q = true;
+    else if (ch === ",") { out.push(cur); cur = ""; }
+    else cur += ch;
+  }
+  out.push(cur);
+  return out;
+}
+
+function parseCsvBlock(lines) {
+  if (!lines.length) return [];
+  const hdr = parseCsvLine(lines[0]);
+  return lines.slice(1).map(l => {
+    const c = parseCsvLine(l), o = {};
+    hdr.forEach((h, i) => { o[h] = c[i] === undefined ? "" : c[i]; });
+    return o;
+  });
+}
+
+function parseNumericPack(text) {
+  const lines = text.replace(/\r/g, "").split("\n");
+  const first = lines.find(l => l.trim());
+  const m = first && first.match(/^\s*#\s+(\S+)\s+numeric pack/i);
+  if (!m) return null;
+  const rep = { symbol: m[1], top: {}, sections: {} };
+  let sec = null, sub = null, cur = null, inCsv = false, csv = [];
+  for (const ln of lines.slice(lines.indexOf(first) + 1)) {
+    if (inCsv) {
+      if (ln.startsWith("```")) { inCsv = false; cur.csv[sub || "main"] = parseCsvBlock(csv); csv = []; }
+      else if (ln.trim()) csv.push(ln);
+      continue;
+    }
+    if (ln.startsWith("```")) { if (cur) { inCsv = true; csv = []; } continue; }
+    if (ln.startsWith("## ")) {
+      sec = ln.slice(3).trim(); sub = null;
+      cur = rep.sections[sec] = { kv: {}, kvList: [], csv: {}, notes: [], text: [] };
+      continue;
+    }
+    if (ln.startsWith("### ")) { sub = ln.slice(4).trim(); continue; }
+    const t = ln.trim();
+    if (!t) continue;
+    const kv = t.match(/^([A-Za-z0-9_]+):\s*(.*)$/);
+    if (!cur) { if (kv) rep.top[kv[1]] = kv[2]; continue; }
+    if (kv) {
+      if (kv[1] === "note") cur.notes.push(kv[2]);
+      else { cur.kv[kv[1]] = kv[2]; cur.kvList.push([kv[1], kv[2], sub]); }
+    } else cur.text.push(t);
+  }
+  return rep;
+}
+
+/* ---- formatting helpers ---- */
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const toNum = v => { if (v === null || v === undefined || v === "") return null; const n = parseFloat(v); return isFinite(n) ? n : null; };
+const firstNum = (...vals) => { for (const v of vals) { const n = toNum(v); if (n !== null) return n; } return null; };
+function fmt(v, d = 2) {
+  const n = toNum(v);
+  return n === null ? "—" : n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+}
+function fmtBig(v) {
+  const n = toNum(v);
+  if (n === null) return "—";
+  const a = Math.abs(n);
+  if (a >= 1e12) return (n / 1e12).toFixed(2) + "T";
+  if (a >= 1e9) return (n / 1e9).toFixed(2) + "B";
+  if (a >= 1e6) return (n / 1e6).toFixed(1) + "M";
+  return n.toLocaleString("en-US");
+}
+function sgn(v, d = 2, suffix = "") {
+  const n = toNum(v);
+  if (n === null) return "—";
+  return (n > 0 ? "+" : "") + n.toFixed(d) + suffix;
+}
+const signCls = v => { const n = toNum(v); return n === null || n === 0 ? "" : n > 0 ? "rv-pos" : "rv-neg"; };
+function cell(v) {
+  const n = toNum(v);
+  if (n === null || !/^-?[\d.]+(e[-+]?\d+)?$/i.test(String(v).trim())) return v === "" || v === "None" ? "—" : v;
+  return Math.abs(n) >= 100 ? n.toLocaleString("en-US", { maximumFractionDigits: 0 }) : String(+n.toFixed(2));
+}
+function fmtNewsTime(s) {
+  const m = String(s).match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})/);
+  if (!m) return s;
+  const mon = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+m[2] - 1];
+  return `${+m[3]} ${mon} ${m[4]}:${m[5]}`;
+}
+
+/* ---- bars ---- */
+function mdBars(rows) {
+  return rows.map(r => ({
+    date: r.session, open: toNum(r.open), high: toNum(r.high), low: toNum(r.low), close: toNum(r.close),
+    volume: toNum(r.volume), ma20: toNum(r.ma20), ma50: toNum(r.ma50), ma200: toNum(r.ma200),
+    rsi: toNum(r.rsi14), macd: toNum(r.macd_hist),
+  })).filter(b => b.close !== null && b.high !== null && b.low !== null && b.open !== null);
+}
+function h4Bars(rows) {
+  return rows.map(r => ({
+    date: r.session + " " + String(r.bucket || "").slice(0, 5),
+    open: toNum(r.open), high: toNum(r.high), low: toNum(r.low), close: toNum(r.close),
+    volume: toNum(r.volume), ma20: null, ma50: null, ma200: null, rsi: toNum(r.rsi14), macd: toNum(r.macd_hist),
+  })).filter(b => b.close !== null && b.high !== null && b.low !== null && b.open !== null);
+}
+function jsonBars(rows) {
+  return rows.map(r => {
+    const close = firstNum(r.close, r.Close, r.adj_close, r["4. close"]);
+    const open = firstNum(r.open, r.Open, r["1. open"], close);
+    const high = firstNum(r.high, r.High, r["2. high"], Math.max(open, close));
+    const low = firstNum(r.low, r.Low, r["3. low"], Math.min(open, close));
+    return {
+      date: r.date || r.Date, open, high, low, close, volume: firstNum(r.volume, r.Volume, r["6. volume"]),
+      ma20: toNum(r.sma20), ma50: toNum(r.sma50), ma200: toNum(r.sma200), rsi: toNum(r.rsi14), macd: toNum(r.macd_hist),
+    };
+  }).filter(b => b.close !== null).sort((a, b) => new Date(a.date) - new Date(b.date));
+}
+
+async function buildReviewItems() {
+  const reps = await storeAll("reports");
+  const latest = {};
+  for (const r of reps) {
+    const c = latest[r.symbol];
+    if (!c || r.session > c.session || (r.session === c.session && r.savedAt > c.savedAt)) latest[r.symbol] = r;
+  }
+  const items = Object.values(latest).map(r => ({ symbol: r.symbol, source: "md", rec: r, rep: r.report }));
+  const ps = (await getAllPacks()).slice().sort((a, b) => (a.packDate < b.packDate ? 1 : -1));
+  if (ps[0]) {
+    for (const sym of (ps[0].symbols || Object.keys(ps[0].data))) {
+      if (latest[sym]) continue;
+      const rows = ps[0].data[sym];
+      if (Array.isArray(rows) && rows.length) items.push({ symbol: sym, source: "json", packDate: ps[0].packDate, rows });
+    }
+  }
+  items.sort((a, b) => a.symbol.localeCompare(b.symbol));
+  return items;
+}
+
+function getModel(item) {
+  let m;
+  if (item.source === "md") {
+    const s = item.rep.sections;
+    const csv = (name, key) => ((s[name] || {}).csv || {})[key || "main"] || [];
+    m = {
+      symbol: item.symbol, source: "md", top: item.rep.top, sec: s,
+      latest: (s.latest || {}).kv || {}, overview: (s.overview || {}).kv || {},
+      daily: mdBars(csv("daily_last_60")), h4: h4Bars(csv("h4_from_60min_last_30")),
+      stamp: item.rep.top.file_stamp_london || "", key: item.rec.key,
+    };
+    m.session = m.latest.indicator_session || item.rec.session || "";
+  } else {
+    const daily = jsonBars(item.rows).slice(-60);
+    m = {
+      symbol: item.symbol, source: "json", top: {}, sec: {}, latest: {}, overview: {},
+      daily, h4: [], stamp: "pack " + item.packDate, key: null,
+      session: daily.length ? daily[daily.length - 1].date : "",
+    };
+  }
+  const last = m.daily[m.daily.length - 1];
+  m.close = firstNum(m.latest.last_raw_close, last && last.close);
+  return m;
+}
+
+/* ---- chart ---- */
+function drawReview(canvas, bars, cursor, levels) {
+  const box = canvas.parentElement.getBoundingClientRect();
+  const W = box.width, H = box.height, dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.max(1, Math.floor(W * dpr)); canvas.height = Math.max(1, Math.floor(H * dpr));
+  canvas.style.width = W + "px"; canvas.style.height = H + "px";
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+  const n = bars.length;
+  if (n < 2) {
+    ctx.fillStyle = "#94a3b8"; ctx.font = "13px sans-serif";
+    ctx.fillText("Not enough bars to chart", 12, 24);
+    return null;
+  }
+  const padL = 6, padR = 50, padT = 20, padB = 18, subH = 50, gap = 8;
+  const hasRsi = bars.some(b => b.rsi !== null), hasMacd = bars.some(b => b.macd !== null);
+  const nSub = (hasRsi ? 1 : 0) + (hasMacd ? 1 : 0);
+  const priceH = H - padT - padB - nSub * (subH + gap);
+  const plotW = W - padL - padR, step = plotW / n, bw = Math.max(1, step * 0.62);
+  const xAt = i => padL + (i + 0.5) * step;
+  let hi = Math.max(...bars.map(b => b.high)), lo = Math.min(...bars.map(b => b.low));
+  const span = Math.max(hi - lo, hi * 0.001), band = span * 0.35;
+  const inBand = v => v !== null && v !== undefined && v >= lo - band && v <= hi + band;
+  const clo = lo, chi = hi;
+  ["ma20", "ma50", "ma200"].forEach(k => bars.forEach(b => {
+    const v = b[k];
+    if (v !== null && v >= clo - band && v <= chi + band) { hi = Math.max(hi, v); lo = Math.min(lo, v); }
+  }));
+  const lv = (levels || []).filter(l => l.p >= clo - band && l.p <= chi + band);
+  lv.forEach(l => { hi = Math.max(hi, l.p); lo = Math.min(lo, l.p); });
+  const rng = Math.max(hi - lo, 1e-9);
+  const pH = priceH * 0.80;
+  const yP = p => padT + (1 - (p - lo) / rng) * pH;
+  const volBase = padT + priceH, volH = priceH * 0.16;
+  const maxV = Math.max(...bars.map(b => b.volume || 0), 1);
+
+  // grid + right axis
+  ctx.font = "11px -apple-system, BlinkMacSystemFont, sans-serif";
+  ctx.textBaseline = "middle"; ctx.textAlign = "left";
+  for (let i = 0; i <= 4; i++) {
+    const yy = padT + (i / 4) * pH;
+    ctx.strokeStyle = "rgba(148,163,184,0.10)"; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(padL, yy); ctx.lineTo(W - padR, yy); ctx.stroke();
+    ctx.fillStyle = "#94a3b8";
+    ctx.fillText((hi - (i / 4) * rng).toFixed(hi < 20 ? 2 : 1), W - padR + 5, yy);
+  }
+  // pivots (dashed), moving averages
+  ctx.save();
+  ctx.beginPath(); ctx.rect(padL, padT - 2, plotW, pH + 4); ctx.clip();
+  lv.forEach(l => {
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = l.kind === "r" ? "rgba(239,68,68,0.55)" : "rgba(34,197,94,0.55)";
+    ctx.beginPath(); ctx.moveTo(padL, yP(l.p)); ctx.lineTo(W - padR, yP(l.p)); ctx.stroke();
+  });
+  ctx.setLineDash([]);
+  [["ma20", "#38bdf8"], ["ma50", "#a78bfa"], ["ma200", "#f59e0b"]].forEach(([k, col]) => {
+    ctx.strokeStyle = col; ctx.lineWidth = 1.4; ctx.beginPath();
+    let started = false;
+    bars.forEach((b, i) => {
+      if (b[k] === null) return;
+      if (!started) { ctx.moveTo(xAt(i), yP(b[k])); started = true; } else ctx.lineTo(xAt(i), yP(b[k]));
+    });
+    ctx.stroke();
+  });
+  ctx.restore();
+  // candles + volume
+  bars.forEach((b, i) => {
+    const x = xAt(i), up = b.close >= b.open, col = up ? "#22c55e" : "#ef4444";
+    ctx.strokeStyle = col; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, yP(b.high)); ctx.lineTo(x, yP(b.low)); ctx.stroke();
+    const top = yP(Math.max(b.open, b.close)), bot = yP(Math.min(b.open, b.close));
+    ctx.fillStyle = col; ctx.fillRect(x - bw / 2, top, bw, Math.max(1, bot - top));
+    if (b.volume) {
+      const vh = (b.volume / maxV) * volH;
+      ctx.fillStyle = up ? "rgba(34,197,94,0.30)" : "rgba(239,68,68,0.30)";
+      ctx.fillRect(x - bw / 2, volBase - vh, bw, vh);
+    }
+  });
+  // legend + pivot labels
+  ctx.textBaseline = "alphabetic"; ctx.font = "11px -apple-system, BlinkMacSystemFont, sans-serif";
+  let lx = padL + 4;
+  [["MA20", "#38bdf8", "ma20"], ["MA50", "#a78bfa", "ma50"], ["MA200", "#f59e0b", "ma200"]].forEach(([t, c, k]) => {
+    if (!bars.some(b => b[k] !== null)) return;
+    ctx.fillStyle = c; ctx.fillText(t, lx, 12); lx += ctx.measureText(t).width + 10;
+  });
+  if (lv.length) { ctx.fillStyle = "#94a3b8"; ctx.fillText("- - pivots", lx, 12); }
+  // sub panels
+  let y0 = padT + priceH + gap;
+  if (hasRsi) {
+    ctx.fillStyle = "rgba(148,163,184,0.06)"; ctx.fillRect(padL, y0, plotW, subH);
+    [30, 70].forEach(v => {
+      const yy = y0 + (1 - v / 100) * subH;
+      ctx.setLineDash([3, 3]); ctx.strokeStyle = "rgba(148,163,184,0.35)";
+      ctx.beginPath(); ctx.moveTo(padL, yy); ctx.lineTo(W - padR, yy); ctx.stroke();
+    });
+    ctx.setLineDash([]);
+    ctx.strokeStyle = "#e879f9"; ctx.lineWidth = 1.3; ctx.beginPath();
+    let st = false;
+    bars.forEach((b, i) => {
+      if (b.rsi === null) return;
+      const yy = y0 + (1 - b.rsi / 100) * subH;
+      if (!st) { ctx.moveTo(xAt(i), yy); st = true; } else ctx.lineTo(xAt(i), yy);
+    });
+    ctx.stroke();
+    const lastR = [...bars].reverse().find(b => b.rsi !== null);
+    ctx.fillStyle = "#94a3b8"; ctx.textAlign = "left";
+    ctx.fillText("RSI14 " + (lastR ? lastR.rsi.toFixed(0) : ""), padL + 4, y0 + 11);
+    ctx.fillText("70", W - padR + 5, y0 + 0.3 * subH + 4); ctx.fillText("30", W - padR + 5, y0 + 0.7 * subH + 4);
+    y0 += subH + gap;
+  }
+  if (hasMacd) {
+    ctx.fillStyle = "rgba(148,163,184,0.06)"; ctx.fillRect(padL, y0, plotW, subH);
+    const mx = Math.max(...bars.map(b => Math.abs(b.macd || 0)), 1e-9), mid = y0 + subH / 2;
+    ctx.strokeStyle = "rgba(148,163,184,0.35)"; ctx.beginPath(); ctx.moveTo(padL, mid); ctx.lineTo(W - padR, mid); ctx.stroke();
+    bars.forEach((b, i) => {
+      if (b.macd === null) return;
+      const h = (b.macd / mx) * (subH / 2 - 3);
+      ctx.fillStyle = b.macd >= 0 ? "rgba(34,197,94,0.75)" : "rgba(239,68,68,0.75)";
+      ctx.fillRect(xAt(i) - bw / 2, h >= 0 ? mid - h : mid, bw, Math.max(1, Math.abs(h)));
+    });
+    ctx.fillStyle = "#94a3b8"; ctx.fillText("MACD hist", padL + 4, y0 + 11);
+  }
+  // x labels
+  ctx.fillStyle = "#94a3b8"; ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+  [0, Math.floor(n / 3), Math.floor((2 * n) / 3), n - 1].forEach((i, k) => {
+    ctx.textAlign = k === 0 ? "left" : k === 3 ? "right" : "center";
+    const x = k === 0 ? padL : k === 3 ? W - padR : xAt(i);
+    ctx.fillText(String(bars[i].date).slice(5, 10), x, H - 4);
+  });
+  if (cursor !== null && cursor >= 0 && cursor < n) {
+    ctx.strokeStyle = "rgba(248,250,252,0.45)"; ctx.setLineDash([2, 3]);
+    ctx.beginPath(); ctx.moveTo(xAt(cursor), padT); ctx.lineTo(xAt(cursor), H - padB); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  return { padL, plotW, step, n };
+}
+
+/* ---- review view ---- */
+const rv = { symbol: null, tf: "daily", items: [], model: null, bars: [], levels: [], geo: null };
+
+function readoutText(b) {
+  if (!b) return "Tap or drag on the chart for bar values.";
+  const f = v => fmt(v, v !== null && Math.abs(v) < 20 ? 3 : 2);
+  const l1 = `${esc(b.date)} &nbsp; O ${f(b.open)} H ${f(b.high)} L ${f(b.low)} C ${f(b.close)} &nbsp; Vol ${fmtBig(b.volume)}`;
+  const parts = [];
+  if (b.ma20 !== null) parts.push("MA20 " + f(b.ma20));
+  if (b.ma50 !== null) parts.push("MA50 " + f(b.ma50));
+  if (b.ma200 !== null) parts.push("MA200 " + f(b.ma200));
+  if (b.rsi !== null) parts.push("RSI " + fmt(b.rsi, 1));
+  if (b.macd !== null) parts.push("MACD " + fmt(b.macd, 3));
+  return l1 + (parts.length ? "<br>" + parts.join(" &nbsp; ") : "");
+}
+
+function kvTable(pairs) {
+  const rows = pairs.filter(p => p[1] !== null && p[1] !== undefined && p[1] !== "" && p[1] !== "—");
+  if (!rows.length) return "";
+  return `<table class="rv-kv">${rows.map(([k, v]) => `<tr><td>${esc(k)}</td><td>${v}</td></tr>`).join("")}</table>`;
+}
+
+function transposed(rows, labelKeys) {
+  if (!rows || !rows.length) return "";
+  const keys = Object.keys(rows[0]).filter(k => !labelKeys.includes(k));
+  const head = rows.map(r => `<th>${esc(labelKeys.map(k => r[k]).join(" "))}</th>`).join("");
+  const body = keys.map(k => `<tr><td>${esc(k.replace(/_/g, " "))}</td>${rows.map(r => `<td>${esc(cell(r[k]))}</td>`).join("")}</tr>`).join("");
+  return `<div class="rv-scroll"><table class="rv-t"><thead><tr><th></th>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+}
+
+function plainTable(rows) {
+  if (!rows || !rows.length) return "";
+  const keys = Object.keys(rows[0]);
+  return `<div class="rv-scroll"><table class="rv-t"><thead><tr>${keys.map(k => `<th>${esc(k.replace(/_/g, " "))}</th>`).join("")}</tr></thead>` +
+    `<tbody>${rows.map(r => `<tr>${keys.map(k => `<td>${esc(cell(r[k]))}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+
+function section(title, inner, open = true) {
+  if (!inner) return "";
+  return `<details class="rv-sec" ${open ? "open" : ""}><summary>${esc(title)}</summary><div class="rv-body">${inner}</div></details>`;
+}
+
+function buildMetrics(m) {
+  const L = m.latest, last = m.daily[m.daily.length - 1], prev = m.daily[m.daily.length - 2];
+  const pctFrom = (key, ma) => {
+    const v = toNum(L[key]);
+    if (v !== null) return v;
+    return last && last[ma] ? (m.close / last[ma] - 1) * 100 : null;
+  };
+  const cells = [];
+  const add = (l, v, cls = "") => { if (v !== null && v !== "—") cells.push(`<div class="rv-m"><div class="l">${l}</div><div class="v ${cls}">${v}</div></div>`); };
+  const dayChg = last && prev ? (last.close / prev.close - 1) * 100 : null;
+  add("Last close", fmt(m.close, m.close < 20 ? 3 : 2));
+  add("Day", dayChg === null ? null : sgn(dayChg, 2, "%"), signCls(dayChg));
+  [["vs MA20", pctFrom("pct_from_ma20", "ma20")], ["vs MA50", pctFrom("pct_from_ma50", "ma50")], ["vs MA200", pctFrom("pct_from_ma200", "ma200")]]
+    .forEach(([l, v]) => add(l, v === null ? null : sgn(v, 1, "%"), signCls(v)));
+  add("RSI 14", fmt(firstNum(L.daily_rsi14, last && last.rsi), 1));
+  add("RSI 4H", L.h4_rsi14 ? fmt(L.h4_rsi14, 1) : null);
+  add("MACD hist", fmt(firstNum(L.daily_macd_hist, last && last.macd), 3), signCls(firstNum(L.daily_macd_hist, last && last.macd)));
+  add("ATR 14", L.atr14_pct ? fmt(L.atr14_pct, 1) + "%" : null);
+  add("RVol 20", L.rvol20 ? fmt(L.rvol20, 2) + "x" : null);
+  add("VWAP (60m approx)", L.session_vwap_60m_approximation_not_trade_vwap ? fmt(L.session_vwap_60m_approximation_not_trade_vwap, 2) : null);
+  add("Prior high", L.prior_high ? fmt(L.prior_high, 2) : null);
+  add("Prior low", L.prior_low ? fmt(L.prior_low, 2) : null);
+  return cells.join("");
+}
+
+function buildFlags(m) {
+  return flagList(m).map(f => `<span class="rv-flag">${esc(f)}</span>`).join("");
+}
+
+function flagList(m) {
+  const flags = [], T = m.top;
+  if (T.partial_daily_bar === "true") flags.push("Latest daily bar is partial");
+  if (T.ma200_valid === "false") flags.push("MA200 not valid (short history)");
+  if (T.ma50_valid === "false") flags.push("MA50 not valid (short history)");
+  if (T.entitlement) flags.push("Data: " + T.entitlement);
+  if (m.session) {
+    const days = Math.round((Date.now() - new Date(m.session).getTime()) / 86400000);
+    if (days >= 4) flags.push(`Last session ${m.session} (${days} days ago)`);
+  }
+  if (m.source === "json") flags.push("Price bars only (no fundamentals, news or options in this source)");
+  return flags;
+}
+
+/* What the user could see when making the call, frozen with the call. */
+function buildSnapshot(m) {
+  const L = m.latest, O = m.overview, s = m.sec, pick = (src, keys) => {
+    const o = {}; keys.forEach(k => { if (src[k] !== undefined && src[k] !== "") o[k] = src[k]; }); return o;
+  };
+  const snap = {
+    metrics: pick(L, ["last_raw_close", "daily_ma20", "daily_ma50", "daily_ma200", "pct_from_ma20", "pct_from_ma50",
+      "pct_from_ma200", "daily_rsi14", "daily_macd_hist", "atr14_pct", "rvol20", "h4_rsi14", "prior_high", "prior_low",
+      "resistance_pivots", "support_pivots"]),
+    flags: flagList(m),
+    overview: pick(O, ["Name", "Sector", "Industry", "MarketCapitalization", "Beta", "PERatio", "ForwardPE", "EPS",
+      "AnalystTargetPrice", "52WeekHigh", "52WeekLow"]),
+    earnings: s.earnings ? pick(s.earnings.kv, ["next_report_date", "days_to_report", "eps_estimate"]) : {},
+    fundamentals: s.fundamentals ? Object.fromEntries(s.fundamentals.kvList
+      .filter(x => x[2] === "derived_descriptive" && /^(ltm_|net_debt|ev_to|latest_q_revenue|shares_chg)/.test(x[0]))
+      .map(x => [x[0], x[1]])) : {},
+    bars: m.daily.slice(-10).map(b => ({ date: b.date, open: b.open, high: b.high, low: b.low, close: b.close,
+      volume: b.volume, ma20: b.ma20, ma50: b.ma50, ma200: b.ma200, rsi: b.rsi, macd_hist: b.macd })),
+    news: ((s.news && s.news.csv.main) || []).slice(0, 5).map(r => ({ time: r.time, label: r.label, score: r.ticker_score, title: r.title })),
+  };
+  if (m.source === "json" && m.daily.length) {
+    const b = m.daily[m.daily.length - 1];
+    snap.metrics = { last_raw_close: String(b.close), daily_ma20: b.ma20 === null ? "" : String(b.ma20),
+      daily_ma50: b.ma50 === null ? "" : String(b.ma50), daily_rsi14: b.rsi === null ? "" : String(b.rsi) };
+  }
+  return snap;
+}
+
+/* ---- training export ---- */
+function csvOut(rows, cols) {
+  const q = v => { const s = v === null || v === undefined ? "" : String(v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  return [cols.join(","), ...rows.map(r => cols.map(c => q(r[c])).join(","))].join("\n");
+}
+
+async function buildExport() {
+  const calls = (await storeAll("calls")).sort((a, b) => a.ts - b.ts);
+  const quiz = (await getAllClassifications()).slice().reverse();
+  const items = await buildReviewItems();
+  const now = {};
+  items.forEach(it => { const m = getModel(it); now[it.symbol] = { close: m.close, session: m.session }; });
+  const outCalls = calls.map(c => {
+    const n = now[c.symbol] || {};
+    const move = c.price && n.close ? (n.close / c.price - 1) * 100 : null;
+    return { ...c, price_now: n.close === undefined ? null : n.close, session_now: n.session || "",
+      change_since_call_pct: move === null ? null : +move.toFixed(2) };
+  });
+  return { outCalls, quiz };
+}
+
+function exportMarkdown(outCalls, quiz) {
+  const stamp = new Date().toISOString();
+  const L = [];
+  L.push("# Trading Trainer training export");
+  L.push(`exported_at: ${stamp}`);
+  L.push(`calls: ${outCalls.length}`);
+  L.push(`quiz_results: ${quiz.length}`);
+  L.push("");
+  L.push("Notes for the reader (human or LLM):");
+  L.push("- Each CALL is the user's own judgement, made while looking at the snapshot shown under it. It is a label of what they decided, not ground truth.");
+  L.push("- change_since_call_pct is the move from the price at the call to the newest close loaded in the app. One horizon, not a validated signal.");
+  L.push("- Snapshot values are descriptive data as supplied by the numeric pack at the time; no score or recommendation is included.");
+  L.push("");
+  outCalls.forEach((c, i) => {
+    const sn = c.snapshot || {};
+    L.push(`## CALL ${i + 1}: ${c.symbol} ${c.call} @ ${c.price === null || c.price === undefined ? "n/a" : c.price} (session ${c.session})`);
+    L.push(`logged_at: ${new Date(c.ts).toISOString()}`);
+    L.push(`source: ${c.source || ""}  pack: ${c.stamp || ""}`);
+    L.push(`call: ${c.call}`);
+    L.push(`note: ${c.note || ""}`);
+    L.push(`price_at_call: ${c.price === null || c.price === undefined ? "" : c.price}`);
+    L.push(`price_now: ${c.price_now === null ? "" : c.price_now}  (session ${c.session_now})`);
+    L.push(`change_since_call_pct: ${c.change_since_call_pct === null ? "" : c.change_since_call_pct}`);
+    L.push("");
+    L.push("### snapshot_at_decision");
+    Object.entries(sn.metrics || {}).forEach(([k, v]) => L.push(`${k}: ${v}`));
+    if (sn.flags && sn.flags.length) L.push(`data_flags: ${sn.flags.join("; ")}`);
+    Object.entries(sn.overview || {}).forEach(([k, v]) => L.push(`${k}: ${v}`));
+    Object.entries(sn.earnings || {}).forEach(([k, v]) => L.push(`earnings_${k}: ${v}`));
+    Object.entries(sn.fundamentals || {}).forEach(([k, v]) => L.push(`${k}: ${v}`));
+    if (sn.bars && sn.bars.length) {
+      L.push(""); L.push("last_daily_bars:"); L.push("```csv");
+      L.push(csvOut(sn.bars, ["date", "open", "high", "low", "close", "volume", "ma20", "ma50", "ma200", "rsi", "macd_hist"]));
+      L.push("```");
+    }
+    if (sn.news && sn.news.length) {
+      L.push(""); L.push("headlines_at_decision:"); L.push("```csv");
+      L.push(csvOut(sn.news, ["time", "label", "score", "title"]));
+      L.push("```");
+    }
+    L.push("");
+  });
+  if (quiz.length) {
+    L.push("## QUIZ RESULTS (historical cards, outcome known)");
+    L.push("```csv");
+    L.push(csvOut(quiz, ["date", "symbol", "setup_type", "prediction", "actual_result", "actual_pct", "correct", "time_taken_seconds", "created_at"]));
+    L.push("```");
+  }
+  return L.join("\n") + "\n";
+}
+
+async function deliverFile(name, text, mime) {
+  const file = new File([text], name, { type: mime });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: name }); return "shared"; }
+    catch (e) { if (e && e.name === "AbortError") return "cancelled"; }
+  }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(file); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  return "downloaded";
+}
+
+async function doExport(kind) {
+  const { outCalls, quiz } = await buildExport();
+  if (!outCalls.length && !quiz.length) { showToast("Nothing to export yet - make a call first"); return; }
+  const d = new Date(), p = n => String(n).padStart(2, "0");
+  const base = `training_${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`;
+  const r = kind === "json"
+    ? await deliverFile(base + ".json", JSON.stringify({ exported_at: d.toISOString(), calls: outCalls, quiz }, null, 1), "application/json")
+    : await deliverFile(base + ".md", exportMarkdown(outCalls, quiz), "text/markdown");
+  if (r !== "cancelled") showToast(`Export ${r}: ${base}.${kind === "json" ? "json" : "md"}`);
+}
+
+function buildLevels(m) {
+  const L = m.latest, out = [];
+  const parse = (s, kind) => String(s || "").split(",").map(x => toNum(x)).filter(x => x !== null).forEach(p => out.push({ p, kind }));
+  parse(L.resistance_pivots, "r");
+  parse(L.support_pivots, "s");
+  return out;
+}
+
+async function renderDetail() {
+  const item = rv.items.find(i => i.symbol === rv.symbol);
+  const det = document.getElementById("rv-detail");
+  if (!item) { det.innerHTML = ""; return; }
+  const m = getModel(item);
+  rv.model = m;
+  const useH4 = rv.tf === "h4" && m.h4.length > 1;
+  rv.bars = useH4 ? m.h4 : m.daily;
+  rv.levels = buildLevels(m);
+  const last = m.daily[m.daily.length - 1], prev = m.daily[m.daily.length - 2];
+  const chg = last && prev ? (last.close / prev.close - 1) * 100 : null;
+  const O = m.overview, s = m.sec;
+  let html = "";
+
+  html += `<div class="rv-head"><div><div class="symbol">${esc(m.symbol)}</div>` +
+    `<div class="nm">${esc(O.Name || "")}${O.Sector ? " &middot; " + esc(O.Sector) : ""}</div>` +
+    `<div class="nm">${esc(m.stamp)}${m.session ? " &middot; session " + esc(m.session) : ""}</div></div>` +
+    `<div class="px">${m.close === null ? "—" : fmt(m.close, m.close < 20 ? 3 : 2)}<small class="${signCls(chg)}">${chg === null ? "" : sgn(chg, 2, "%")}</small></div></div>`;
+  const flags = buildFlags(m);
+  if (flags) html += `<div class="rv-flags">${flags}</div>`;
+
+  html += `<div class="rv-seg"><button data-tf="daily" class="${!useH4 ? "active" : ""}">Daily</button>` +
+    (m.h4.length > 1 ? `<button data-tf="h4" class="${useH4 ? "active" : ""}">4H</button>` : "") + `</div>`;
+  html += `<div class="rv-readout" id="rv-readout">${readoutText(null)}</div>`;
+  html += `<div class="rv-chart"><canvas id="rv-canvas"></canvas></div>`;
+  html += `<div class="rv-grid">${buildMetrics(m)}</div>`;
+
+  // overview
+  if (m.source === "md") {
+    const hi52 = toNum(O["52WeekHigh"]), lo52 = toNum(O["52WeekLow"]), tgt = toNum(O.AnalystTargetPrice);
+    const pos = hi52 !== null && lo52 !== null && hi52 > lo52 && m.close !== null ? ((m.close - lo52) / (hi52 - lo52)) * 100 : null;
+    html += section("Overview", kvTable([
+      ["Industry", esc(O.Industry || "")],
+      ["Market cap", fmtBig(O.MarketCapitalization)],
+      ["Beta", fmt(O.Beta, 2)],
+      ["P/E (trailing)", O.PERatio ? fmt(O.PERatio, 1) : ""],
+      ["P/E (forward)", O.ForwardPE ? fmt(O.ForwardPE, 1) : ""],
+      ["EPS (ttm)", O.EPS ? fmt(O.EPS, 2) : ""],
+      ["Analyst target", tgt === null ? "" : `${fmt(tgt, 2)} <span class="${signCls(m.close ? (tgt / m.close - 1) * 100 : null)}">(${m.close ? sgn((tgt / m.close - 1) * 100, 0, "%") : ""} vs close)</span>`],
+      ["52-week range", hi52 === null ? "" : `${fmt(lo52, 2)} - ${fmt(hi52, 2)}${pos === null ? "" : ` (at ${pos.toFixed(0)}%)`}`],
+    ]));
+  }
+
+  // earnings
+  const E = s.earnings;
+  if (E) {
+    html += section("Earnings", kvTable([
+      ["Next report", esc(E.kv.next_report_date || "")],
+      ["Days to report", esc(E.kv.days_to_report || "")],
+      ["EPS estimate", E.kv.eps_estimate ? fmt(E.kv.eps_estimate, 2) : ""],
+      ["Fiscal period end", esc(E.kv.fiscal_date_ending || "")],
+    ]) + plainTable(E.csv.main));
+  }
+
+  // news
+  const N = s.news;
+  if (N && N.csv.main && N.csv.main.length) {
+    const rows = N.csv.main;
+    const first = String((O.Name || "").split(/[\s,.]+/)[0] || "").toLowerCase();
+    const symRe = new RegExp("(^|[^A-Za-z])" + m.symbol.replace(/[^A-Za-z0-9]/g, "") + "([^A-Za-z]|$)");
+    const about = rows.filter(r => (first.length > 2 && String(r.title).toLowerCase().includes(first)) || symRe.test(r.title)).length;
+    const tagFor = l => /bullish/i.test(l) ? "tag-bull" : /bearish/i.test(l) ? "tag-bear" : "tag-neutral";
+    html += section(`News (${rows.length})`,
+      `<div class="rv-note" style="margin:0 0 4px">Headlines naming this company: ${about} of ${rows.length}. Labels and scores are the provider's, not ours.</div>` +
+      rows.map(r => `<div class="rv-news"><div class="t">${esc(r.title)}</div><div class="m">` +
+        `<span class="tag ${tagFor(r.label)}">${esc(r.label)}</span><span>${esc(fmtNewsTime(r.time))}</span><span>${esc(r.source)}</span>` +
+        `<span>score ${esc(fmt(r.ticker_score, 2))}</span></div></div>`).join(""));
+  }
+
+  // options
+  const OP = s.options_summary;
+  if (OP) {
+    const blocks = []; let b = null;
+    OP.kvList.forEach(([k, v]) => { if (k === "expiry") { b = { expiry: v }; blocks.push(b); } else if (b) b[k] = v; });
+    const rows = blocks.map(x => ({
+      expiry: x.expiry, atm_strike: x.atm_strike, atm_iv_pct: x.atm_iv ? (toNum(x.atm_iv) * 100).toFixed(1) : "",
+      call_vol: x.call_volume, put_vol: x.put_volume, put_call_vol: x.put_call_volume, call_oi: x.call_oi, put_oi: x.put_oi,
+    }));
+    html += section("Options", (OP.kv.contracts ? `<div class="rv-note" style="margin:0 0 6px">Contracts: ${esc(OP.kv.contracts)}</div>` : "") +
+      (rows.length ? plainTable(rows) : `<div class="rv-note">${esc(OP.text.join(" ") || "No chain data")}</div>`));
+  }
+
+  // fundamentals
+  const F = s.fundamentals;
+  if (F) {
+    const derived = F.kvList.filter(x => x[2] === "derived_descriptive" && x[0] !== "note").map(([k, v]) => [k.replace(/_/g, " "), esc(cell(v))]);
+    html += section("Fundamentals (USD m, reported)",
+      kvTable(derived) +
+      `<div class="rv-note">Quarterly (last 5)</div>` + transposed(F.csv.quarterly_last_5, ["q_end"]) +
+      `<div class="rv-note">Annual (last 3)</div>` + transposed(F.csv.annual_last_3, ["fy_end"]) +
+      `<div class="rv-note">Forward estimates</div>` + transposed(F.csv.forward_estimates, ["horizon", "period_end"]) +
+      (F.notes.length ? F.notes.map(n => `<div class="rv-note">&bull; ${esc(n)}</div>`).join("") : "") +
+      (F.kvList.filter(x => x[0] === "note").map(x => `<div class="rv-note">&bull; ${esc(x[1])}</div>`).join("")));
+  }
+
+  // insider
+  const I = s.insider_transactions;
+  if (I) html += section("Insider transactions", `<div class="rv-note" style="margin:0">${esc(I.text.join(" "))} ${I.kv.rows ? "Rows: " + esc(I.kv.rows) : ""}</div>`, false);
+
+  // data notes
+  if (m.source === "md") {
+    html += section("Data notes", kvTable(Object.entries(m.top).map(([k, v]) => [k.replace(/_/g, " "), esc(v)])) +
+      `<div style="margin-top:10px"><button class="btn" data-delrep="1" style="font-size:12px;padding:6px 10px">Delete this report</button></div>`, false);
+  }
+
+  // call panel
+  const calls = (await storeAll("calls")).filter(c => c.symbol === m.symbol).sort((a, b) => b.ts - a.ts);
+  const tagCls = { bullish: "tag-bull", bearish: "tag-bear", neutral: "tag-neutral", pass: "tag-invalid" };
+  html += `<div class="rv-call"><div style="font-weight:700;margin-bottom:2px">Your call on ${esc(m.symbol)}</div>` +
+    `<div class="rv-note" style="margin:0">Logged at ${m.close === null ? "—" : fmt(m.close, 2)} (${esc(m.session)}). Nothing here is scored or advised.</div>` +
+    `<input type="text" id="rv-note" placeholder="Optional note (why / what would change your mind)">` +
+    `<div class="row"><button class="btn btn-bull" data-call="bullish">Bullish</button><button class="btn btn-bear" data-call="bearish">Bearish</button>` +
+    `<button class="btn btn-neutral" data-call="neutral">Neutral</button><button class="btn btn-invalid" data-call="pass">Pass</button></div>` +
+    calls.slice(0, 8).map(c => {
+      const move = c.price && m.close ? (m.close / c.price - 1) * 100 : null;
+      return `<div class="rv-callrow"><div><span class="tag ${tagCls[c.call] || "tag-invalid"}">${esc(c.call)}</span> ` +
+        `<span style="color:var(--muted)">${esc(String(c.session || "").slice(0, 10))} @ ${fmt(c.price, 2)}</span>` +
+        `${c.note ? `<div style="color:var(--muted);margin-top:3px">${esc(c.note)}</div>` : ""}</div>` +
+        `<div style="text-align:right"><div class="${signCls(move)}">${move === null ? "—" : sgn(move, 1, "%")} since</div>` +
+        `<button class="btn" data-delcall="${c.id}" style="font-size:11px;padding:3px 8px;margin-top:4px">Remove</button></div></div>`;
+    }).join("") + `</div>`;
+
+  det.innerHTML = html;
+  drawCurrentChart();
+}
+
+function drawCurrentChart() {
+  const canvas = document.getElementById("rv-canvas");
+  if (!canvas) return;
+  rv.geo = drawReview(canvas, rv.bars, null, rv.levels);
+  const ro = document.getElementById("rv-readout");
+  const move = e => {
+    if (!rv.geo) return;
+    const r = canvas.getBoundingClientRect();
+    const i = Math.max(0, Math.min(rv.geo.n - 1, Math.floor((e.clientX - r.left - rv.geo.padL) / rv.geo.step)));
+    drawReview(canvas, rv.bars, i, rv.levels);
+    ro.innerHTML = readoutText(rv.bars[i]);
+  };
+  canvas.addEventListener("pointerdown", move);
+  canvas.addEventListener("pointermove", e => { if (e.buttons || e.pointerType === "touch") move(e); });
+}
+
+async function renderReview() {
+  rv.items = await buildReviewItems();
+  const chips = document.getElementById("rv-chips"), det = document.getElementById("rv-detail");
+  if (!rv.items.length) {
+    chips.innerHTML = "";
+    det.innerHTML = '<div class="empty">No data to review yet.<div style="margin-top:8px;font-size:13px;">' +
+      'Go to <b>Uploads</b> and import the <code>SYMBOL_..._numeric pack</code> .md files, or a <code>stock_pack</code> JSON.</div></div>';
+    return;
+  }
+  if (!rv.items.some(i => i.symbol === rv.symbol)) rv.symbol = rv.items[0].symbol;
+  chips.innerHTML = rv.items.map(it => {
+    const m = getModel(it);
+    return `<button class="rv-chip ${it.symbol === rv.symbol ? "active" : ""}" data-sym="${esc(it.symbol)}">` +
+      `<b>${esc(it.symbol)}</b><span>${m.close === null ? "—" : fmt(m.close, 2)}</span></button>`;
+  }).join("");
+  await renderDetail();
+}
+
+document.getElementById("rv-chips").addEventListener("click", e => {
+  const b = e.target.closest("[data-sym]");
+  if (b) { rv.symbol = b.dataset.sym; rv.tf = "daily"; renderReview(); }
+});
+
+document.getElementById("rv-detail").addEventListener("click", async e => {
+  const t = e.target.closest("button");
+  if (!t) return;
+  if (t.dataset.tf) { rv.tf = t.dataset.tf; await renderDetail(); return; }
+  if (t.dataset.call) {
+    const m = rv.model, noteEl = document.getElementById("rv-note");
+    await storePut("calls", {
+      symbol: m.symbol, session: m.session, price: m.close, call: t.dataset.call,
+      note: noteEl ? noteEl.value.trim() : "", ts: Date.now(), source: m.source, stamp: m.stamp,
+      snapshot: buildSnapshot(m),
+    });
+    showToast(`${m.symbol}: ${t.dataset.call} logged`);
+    await renderDetail();
+    return;
+  }
+  if (t.dataset.delcall) { await storeDelete("calls", +t.dataset.delcall); await renderDetail(); return; }
+  if (t.dataset.delrep && rv.model && rv.model.key) {
+    await storeDelete("reports", rv.model.key);
+    showToast("Report deleted");
+    await renderReview();
+  }
+});
+
+document.getElementById("rv-export-md").addEventListener("click", () => doExport("md"));
+document.getElementById("rv-export-json").addEventListener("click", () => doExport("json"));
+
+window.addEventListener("resize", () => { if (views.review.classList.contains("active")) drawCurrentChart(); });
 
 /* =========================
    Init
