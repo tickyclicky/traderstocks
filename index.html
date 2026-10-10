@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0f172a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>Trading Trainer</title>
+<style>
+  :root {
+    --bg: #0b0f19;
+    --surface: #111827;
+    --surface-2: #1f2937;
+    --ink: #f8fafc;
+    --muted: #94a3b8;
+    --accent-bull: #22c55e;
+    --accent-bear: #ef4444;
+    --accent-neutral: #f59e0b;
+    --accent-invalid: #64748b;
+    --line: rgba(148,163,184,0.15);
+    --radius: 16px;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.7);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overflow: hidden;
+    touch-action: manipulation;
+  }
+  #app {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    max-width: 430px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .warn-banner {
+    background: rgba(239,68,68,0.15);
+    border: 1px solid rgba(239,68,68,0.4);
+    color: #fca5a5;
+    padding: 10px 14px;
+    font-size: 12px;
+    line-height: 1.5;
+    display: none;
+  }
+  .warn-banner.show { display: block; }
+  .header {
+    padding: 12px 16px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg);
+    z-index: 10;
+  }
+  .header h1 { font-size: 18px; margin: 0; letter-spacing: -0.3px; }
+  .header .stats-row {
+    display: flex;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .header .stats-row span {
+    background: var(--surface);
+    padding: 4px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+  }
+  .header .stats-row .val { color: var(--ink); font-weight: 600; margin-left: 4px; }
+  .view {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 16px;
+    gap: 16px;
+  }
+  .view.active { display: flex; }
+  .upload-drop {
+    border: 2px dashed var(--line);
+    border-radius: var(--radius);
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--muted);
+    background: var(--surface);
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .upload-drop.active {
+    border-color: var(--accent-bull);
+    background: rgba(34,197,94,0.08);
+  }
+  .upload-drop input { display: none; }
+  .btn {
+    background: var(--surface-2);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: transform .05s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: #2563eb; border-color: #2563eb; }
+  .btn-bull { background: rgba(34,197,94,0.15); border-color: rgba(34,197,94,0.4); color: var(--accent-bull); }
+  .btn-bear { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); color: var(--accent-bear); }
+  .btn-neutral { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.4); color: var(--accent-neutral); }
+  .btn-invalid { background: rgba(100,116,139,0.15); border-color: rgba(100,116,139,0.4); color: var(--accent-invalid); }
+  .pack-list { display: flex; flex-direction: column; gap: 8px; }
+  .pack-item {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .pack-item .date { font-weight: 600; }
+  .pack-item .meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .pack-item .actions { display: flex; gap: 8px; }
+  .pack-item .btn { padding: 6px 10px; font-size: 12px; }
+  .card-stage {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+  .card-header {
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+  }
+  .symbol { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+  .setup-badge {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+  }
+  .chart-wrap {
+    flex: 1;
+    position: relative;
+    min-height: 0;
+    background: #0b0f19;
+  }
+  canvas { display: block; width: 100%; height: 100%; }
+  .card-footer {
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--muted);
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+  }
+  .reveal {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(4px);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 10px;
+    padding: 20px;
+    z-index: 5;
+  }
+  .reveal.show { display: flex; }
+  .reveal .result-title { font-size: 22px; font-weight: 800; }
+  .reveal .result-sub { font-size: 14px; color: var(--muted); }
+  .reveal .result-move { font-size: 34px; font-weight: 900; }
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .controls .btn { padding: 14px; font-size: 15px; border-radius: 12px; }
+  .controls .btn-full { grid-column: 1 / -1; }
+  .stat-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+  }
+  .stat-card .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-card .value { font-size: 26px; font-weight: 800; margin-top: 6px; }
+  .history-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .history-table th, .history-table td { padding: 10px 8px; text-align: left; border-bottom: 1px solid var(--line); }
+  .history-table th { color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; }
+  .tag { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px; display: inline-block; }
+  .tag-bull { background: rgba(34,197,94,0.15); color: var(--accent-bull); }
+  .tag-bear { background: rgba(239,68,68,0.15); color: var(--accent-bear); }
+  .tag-neutral { background: rgba(245,158,11,0.15); color: var(--accent-neutral); }
+  .tag-invalid { background: rgba(100,116,139,0.15); color: var(--accent-invalid); }
+  .tag-correct { background: rgba(34,197,94,0.15); color: var(--accent-bull); }
+  .tag-wrong { background: rgba(239,68,68,0.15); color: var(--accent-bear); }
+  .bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+    background: var(--bg);
+  }
+  .nav-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 11px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    flex: 1;
+  }
+  .nav-btn.active { color: var(--ink); }
+  .nav-btn svg { width: 22px; height: 22px; }
+  .empty { text-align: center; color: var(--muted); padding: 40px 20px; }
+  .empty svg { width: 48px; height: 48px; margin-bottom: 10px; opacity: 0.6; }
+  .toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--surface-2);
+    color: var(--ink);
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    font-size: 13px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all .25s ease;
+    z-index: 100;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .swipe-hint {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%) scale(0.9);
+    font-size: 14px;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 999px;
+    opacity: 0;
+    transition: opacity .15s, transform .15s;
+    pointer-events: none;
+    z-index: 4;
+  }
+  .swipe-hint.left { left: 12px; background: var(--accent-bear); color: #fff; }
+  .swipe-hint.right { right: 12px; background: var(--accent-bull); color: #fff; }
+  .swipe-hint.up { top: auto; bottom: 80px; left: 50%; transform: translateX(-50%) scale(0.9); background: var(--accent-invalid); color: #fff; }
+  .swipe-hint.show { opacity: 1; transform: translateY(-50%) scale(1); }
+  .swipe-hint.up.show { transform: translateX(-50%) scale(1); }
+  @media (min-width: 390px) {
+    .header h1 { font-size: 20px; }
+    .symbol { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="warn-banner" id="warn-banner">
+    <b>file:// blocked</b> — Safari disables IndexedDB for local files. Uploads will not persist. Serve this page over HTTP (e.g. python serve_trainer.py) or use the in-memory fallback below.
+  </div>
+  <div class="header">
+    <h1>Trading Trainer</h1>
+    <div class="stats-row">
+      <span>Score <b class="val" id="h-score">0</b></span>
+      <span>Streak <b class="val" id="h-streak">0</b></span>
+      <span>Acc <b class="val" id="h-acc">—</b></span>
+    </div>
+  </div>
+
+  <div class="view active" id="view-train">
+    <div class="card-stage" id="card-stage">
+      <div class="empty" id="train-empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+        <div>No data packs loaded.</div>
+        <div style="margin-top:8px; font-size:13px;">Go to Uploads and import a daily pack JSON.</div>
+      </div>
+      <div class="card" id="card" style="display:none;">
+        <div class="card-header">
+          <div class="symbol" id="c-symbol">AAPL</div>
+          <div class="setup-badge" id="c-setup">Consolidation</div>
+        </div>
+        <div class="chart-wrap" id="chart-wrap">
+          <canvas id="chart"></canvas>
+          <div class="swipe-hint left" id="hint-left">Bearish</div>
+          <div class="swipe-hint right" id="hint-right">Bullish</div>
+          <div class="swipe-hint up" id="hint-up">Invalid</div>
+          <div class="reveal" id="reveal">
+            <div class="result-title" id="r-title">Correct!</div>
+            <div class="result-move" id="r-move">+3.4%</div>
+            <div class="result-sub" id="r-sub">You predicted Bullish • Actual was Bullish</div>
+            <button class="btn btn-primary" style="margin-top:10px;" id="r-next">Next Card →</button>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span id="c-range">20 days shown</span>
+          <span id="c-indicators">RSI: 58 • SMA20 above SMA50</span>
+        </div>
+      </div>
+    </div>
+    <div class="controls" id="controls" style="display:none;">
+      <button class="btn btn-bear" data-pred="bearish">Bearish ↓</button>
+      <button class="btn btn-bull" data-pred="bullish">Bullish ↑</button>
+      <button class="btn btn-neutral" data-pred="neutral">Neutral →</button>
+      <button class="btn btn-invalid" data-pred="invalid">Setup Invalid</button>
+    </div>
+  </div>
+
+  <div class="view" id="view-upload">
+    <div class="upload-drop" id="drop-zone">
+      <div style="font-size:28px; margin-bottom:8px;">📂</div>
+      <div style="font-weight:700; color:var(--ink); margin-bottom:6px;">Tap to import daily pack</div>
+      <div style="font-size:13px; margin-bottom:14px;">Drop <code>stock_pack_YYYY-MM-DD.json</code> files here</div>
+      <button class="btn btn-primary" id="pick-files">Choose Files</button>
+      <input type="file" id="file-input" accept=".json,application/json" multiple>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="margin:0; font-size:16px;">Available Packs</h3>
+      <button class="btn" id="clear-all" style="font-size:12px; padding:6px 10px;">Clear All</button>
+    </div>
+    <div class="pack-list" id="pack-list">
+      <div class="empty" style="padding:20px;">No packs stored yet.</div>
+    </div>
+  </div>
+
+  <div class="view" id="view-stats">
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="label">Total Attempts</div>
+        <div class="value" id="s-total">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Win Rate</div>
+        <div class="value" id="s-winrate">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Best Streak</div>
+        <div class="value" id="s-best">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Avg Time</div>
+        <div class="value" id="s-time">—</div>
+      </div>
+    </div>
+    <h3 style="margin:4px 0 0; font-size:16px;">Recent History</h3>
+    <div style="overflow:auto; border:1px solid var(--line); border-radius:12px; background:var(--surface);">
+      <table class="history-table" id="history-table">
+        <thead><tr><th>Date</th><th>Sym</th><th>Pred</th><th>Actual</th><th>Res</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="empty" id="history-empty" style="display:none;">No classifications yet. Start training!</div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn active" data-view="train">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l7 4v6c0 5.5-3.8 10.7-7 12-3.2-1.3-7-6.5-7-12V6l7-4z"/></svg>
+      Train
+    </button>
+    <button class="nav-btn" data-view="upload">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+      Uploads
+    </button>
+    <button class="nav-btn" data-view="stats">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+      Stats
+    </button>
+  </div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* =========================
+   Storage backends: IndexedDB + in-memory fallback
+   ========================= */
+const isFileProtocol = location.protocol === "file:";
+let useIDB = typeof indexedDB !== "undefined";
+let db = null;
+const LS_KEY = "TradingTrainerFallback_v1";
+
+// Fallback store. Persisted to localStorage when available, so data survives a
+// closed tab even where Safari blocks IndexedDB (file:// pages).
+const MEM = {
+  packs: [],
+  classifications: [],
+  stats: {},
+  nextId: 1,
+};
+
+function memLoad() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return;
+    const o = JSON.parse(raw);
+    MEM.packs = o.packs || [];
+    MEM.classifications = o.classifications || [];
+    MEM.stats = o.stats || {};
+    MEM.nextId = o.nextId || 1;
+  } catch (e) { console.warn("localStorage load failed", e); }
+}
+
+function memSave() {
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify(MEM));
+  } catch (e) {
+    console.warn("localStorage save failed", e);
+    showToast("Storage full or blocked - data kept for this session only");
+  }
+}
+
+function openDB() {
+  return new Promise((res, rej) => {
+    const timer = setTimeout(() => rej(new Error("IndexedDB open timed out")), 2000);
+    const req = indexedDB.open("TradingTrainerDB", 1);
+    req.onblocked = () => { clearTimeout(timer); rej(new Error("IndexedDB blocked")); };
+    req.onerror = () => { clearTimeout(timer); rej(req.error); };
+    req.onsuccess = () => { clearTimeout(timer); res(req.result); };
+    req.onupgradeneeded = (e) => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains("packs")) d.createObjectStore("packs", { keyPath: "packDate" });
+      if (!d.objectStoreNames.contains("classifications")) {
+        const c = d.createObjectStore("classifications", { keyPath: "id", autoIncrement: true });
+        c.createIndex("user_id", "user_id", { unique: false });
+      }
+      if (!d.objectStoreNames.contains("stats")) d.createObjectStore("stats", { keyPath: "key" });
+    };
+  });
+}
+
+async function initStorage() {
+  if (useIDB) {
+    try {
+      db = await openDB();
+      return;
+    } catch (e) {
+      console.warn("IDB failed, using local fallback", e);
+      useIDB = false;
+    }
+  }
+  memLoad();
+  const b = document.getElementById("warn-banner");
+  b.innerHTML = "<b>Limited storage mode</b> — this browser blocked IndexedDB" +
+    (isFileProtocol ? " for file:// pages" : "") +
+    ". Data is saved in this browser's local storage instead (smaller capacity, can be cleared by iOS if unused).";
+  b.classList.add("show");
+}
+
+async function savePack(packDate, data) {
+  const symbols = Object.keys(data);
+  const rec = { packDate, data, symbols, savedAt: Date.now() };
+  if (useIDB && db) {
+    const tx = db.transaction("packs", "readwrite");
+    tx.objectStore("packs").put(rec);
+    await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+  } else {
+    const idx = MEM.packs.findIndex(p => p.packDate === packDate);
+    if (idx >= 0) MEM.packs[idx] = rec; else MEM.packs.push(rec);
+    memSave();
+  }
+}
+
+async function getAllPacks() {
+  if (useIDB && db) {
+    const tx = db.transaction("packs", "readonly");
+    const store = tx.objectStore("packs");
+    return new Promise((res, rej) => {
+      const r = store.getAll();
+      r.onsuccess = () => res(r.result);
+      r.onerror = () => rej(r.error);
+    });
+  }
+  return MEM.packs;
+}
+
+async function deletePack(packDate) {
+  if (useIDB && db) {
+    const tx = db.transaction("packs", "readwrite");
+    tx.objectStore("packs").delete(packDate);
+    await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+  } else {
+    MEM.packs = MEM.packs.filter(p => p.packDate !== packDate);
+    memSave();
+  }
+}
+
+async function addClassification(rec) {
+  if (useIDB && db) {
+    const tx = db.transaction("classifications", "readwrite");
+    tx.objectStore("classifications").put(rec);
+    await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+  } else {
+    rec.id = MEM.nextId++;
+    MEM.classifications.unshift(rec);
+    memSave();
+  }
+}
+
+async function getAllClassifications() {
+  if (useIDB && db) {
+    const tx = db.transaction("classifications", "readonly");
+    const store = tx.objectStore("classifications");
+    return new Promise((res, rej) => {
+      const r = store.getAll();
+      r.onsuccess = () => res(r.result.reverse());
+      r.onerror = () => rej(r.error);
+    });
+  }
+  return [...MEM.classifications];
+}
+
+async function getStat(key, fallback) {
+  if (useIDB && db) {
+    const tx = db.transaction("stats", "readonly");
+    return new Promise((res) => {
+      const r = tx.objectStore("stats").get(key);
+      r.onsuccess = () => res(r.result ? r.result.value : fallback);
+      r.onerror = () => res(fallback);
+    });
+  }
+  return MEM.stats[key] !== undefined ? MEM.stats[key] : fallback;
+}
+
+async function setStat(key, value) {
+  if (useIDB && db) {
+    const tx = db.transaction("stats", "readwrite");
+    tx.objectStore("stats").put({ key, value });
+    await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+  } else {
+    MEM.stats[key] = value;
+    memSave();
+  }
+}
+
+/* =========================
+   App State
+   ========================= */
+let packs = [];
+let currentCard = null;
+let score = 0;
+let streak = 0;
+let bestStreak = 0;
+let cardStartTime = 0;
+
+/* =========================
+   DOM Refs
+   ========================= */
+const views = {
+  train: document.getElementById("view-train"),
+  upload: document.getElementById("view-upload"),
+  stats: document.getElementById("view-stats"),
+};
+const navs = document.querySelectorAll(".nav-btn");
+const toastEl = document.getElementById("toast");
+
+/* =========================
+   Navigation
+   ========================= */
+function switchView(name) {
+  Object.values(views).forEach(v => v.classList.remove("active"));
+  views[name].classList.add("active");
+  navs.forEach(n => n.classList.toggle("active", n.dataset.view === name));
+  if (name === "stats") renderStats();
+  if (name === "upload") renderPackList();
+}
+navs.forEach(n => n.addEventListener("click", () => switchView(n.dataset.view)));
+
+function showToast(msg) {
+  toastEl.textContent = msg;
+  toastEl.classList.add("show");
+  setTimeout(() => toastEl.classList.remove("show"), 2200);
+}
+
+/* =========================
+   File Upload
+   ========================= */
+const dropZone = document.getElementById("drop-zone");
+const fileInput = document.getElementById("file-input");
+const pickBtn = document.getElementById("pick-files");
+
+pickBtn.addEventListener("click", () => fileInput.click());
+dropZone.addEventListener("click", () => fileInput.click());
+["dragenter","dragover"].forEach(evt => {
+  dropZone.addEventListener(evt, (e) => { e.preventDefault(); dropZone.classList.add("active"); });
+});
+["dragleave","drop"].forEach(evt => {
+  dropZone.addEventListener(evt, (e) => { e.preventDefault(); dropZone.classList.remove("active"); });
+});
+dropZone.addEventListener("drop", (e) => handleFiles(e.dataTransfer.files));
+fileInput.addEventListener("change", (e) => handleFiles(e.target.files));
+
+async function handleFiles(fileList) {
+  for (const file of fileList) {
+    try {
+      const text = await file.text();
+      const json = JSON.parse(text);
+      let packDate = new Date().toISOString().slice(0,10);
+      const m = file.name.match(/(\d{4}-\d{2}-\d{2})/);
+      if (m) packDate = m[1];
+      await savePack(packDate, json);
+      showToast(`Loaded ${file.name}`);
+    } catch (err) {
+      showToast(`Failed: ${file.name}`);
+      console.error(err);
+    }
+  }
+  await loadPacks();
+  renderPackList();
+  prepareCard();
+}
+
+async function loadPacks() {
+  packs = await getAllPacks();
+}
+
+function renderPackList() {
+  const list = document.getElementById("pack-list");
+  if (!packs.length) {
+    list.innerHTML = '<div class="empty" style="padding:20px;">No packs stored yet.</div>';
+    return;
+  }
+  list.innerHTML = packs.map(p => {
+    const symCount = p.symbols ? p.symbols.length : Object.keys(p.data||{}).length;
+    return `<div class="pack-item">
+      <div>
+        <div class="date">${p.packDate}</div>
+        <div class="meta">${symCount} symbols • ${new Date(p.savedAt).toLocaleString()}</div>
+      </div>
+      <div class="actions">
+        <button class="btn" data-del="${p.packDate}">Delete</button>
+      </div>
+    </div>`;
+  }).join("");
+  list.querySelectorAll("[data-del]").forEach(b => {
+    b.addEventListener("click", async (e) => {
+      await deletePack(e.target.dataset.del);
+      await loadPacks();
+      renderPackList();
+      prepareCard();
+    });
+  });
+}
+
+document.getElementById("clear-all").addEventListener("click", async () => {
+  if (!confirm("Delete all stored packs?")) return;
+  for (const p of packs) await deletePack(p.packDate);
+  packs = [];
+  renderPackList();
+  prepareCard();
+});
+
+/* =========================
+   Card / Training Logic
+   ========================= */
+function normalizeDay(d) {
+  return {
+    date: d.date || d.Date,
+    open: + (d.open || d.Open || d["1. open"] || d.open),
+    high: + (d.high || d.High || d["2. high"] || d.high),
+    low: + (d.low || d.Low || d["3. low"] || d.low),
+    close: + (d.close || d.Close || d["4. close"] || d.close),
+    volume: + (d.volume || d.Volume || d["6. volume"] || d.volume || 0),
+    sma20: d.sma20 !== undefined ? +d.sma20 : null,
+    sma50: d.sma50 !== undefined ? +d.sma50 : null,
+    rsi14: d.rsi14 !== undefined ? +d.rsi14 : null,
+  };
+}
+
+function classifySetup(days, cutoff) {
+  if (days.length < 10) return "Unknown";
+  const recent = days.slice(Math.max(0, cutoff-10), cutoff);
+  const range = Math.max(...recent.map(d=>d.high)) - Math.min(...recent.map(d=>d.low));
+  const last = days[cutoff-1];
+  const prev = days[cutoff-2] || last;
+  const sma20 = last.sma20; const sma50 = last.sma50;
+  if (range === 0) return "Consolidation";
+  const trend = last.close - days[cutoff-10].close;
+  if (Math.abs(trend)/range < 0.3) return "Consolidation";
+  if (trend > 0 && last.close > (sma20||last.close) && last.close > (sma50||last.close)) return "Breakout";
+  if (trend < 0 && last.close < (sma20||last.close) && last.close < (sma50||last.close)) return "Breakdown";
+  if (trend < 0 && last.close > (sma20||last.close)) return "Pullback";
+  return "Trend";
+}
+
+function pickCutoff(days) {
+  const min = 25;
+  const max = Math.max(min, days.length - 5);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function actualDirection(days, cutoff, hold=5) {
+  const start = days[cutoff-1].close;
+  const endIdx = Math.min(cutoff + hold - 1, days.length - 1);
+  const end = days[endIdx].close;
+  const pct = (end - start) / start * 100;
+  if (pct > 1.0) return { label: "bullish", pct };
+  if (pct < -1.0) return { label: "bearish", pct };
+  return { label: "neutral", pct };
+}
+
+function prepareCard() {
+  const empty = document.getElementById("train-empty");
+  const card = document.getElementById("card");
+  const controls = document.getElementById("controls");
+  if (!packs.length) {
+    empty.style.display = "";
+    card.style.display = "none";
+    controls.style.display = "none";
+    currentCard = null;
+    return;
+  }
+  empty.style.display = "none";
+  card.style.display = "";
+  controls.style.display = "";
+  const pack = packs[Math.floor(Math.random() * packs.length)];
+  const symbols = pack.symbols || Object.keys(pack.data);
+  const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+  const rawDays = Array.isArray(pack.data[symbol]) ? pack.data[symbol] : Object.values(pack.data[symbol]);
+  const days = rawDays.map(normalizeDay).filter(d => d.close > 0);
+  days.sort((a,b) => new Date(a.date) - new Date(b.date));
+  if (days.length < 30) return prepareCard();
+  const cutoff = pickCutoff(days);
+  const setup = classifySetup(days, cutoff);
+  const actual = actualDirection(days, cutoff, 5);
+  currentCard = { symbol, days, cutoff, setup, actual, packDate: pack.packDate };
+  document.getElementById("c-symbol").textContent = symbol;
+  document.getElementById("c-setup").textContent = setup;
+  document.getElementById("c-range").textContent = cutoff + " days shown";
+  const last = days[cutoff-1];
+  const rsi = last.rsi14 !== null ? Math.round(last.rsi14) : "—";
+  const maStatus = last.sma20 && last.sma50 ? (last.sma20 > last.sma50 ? "SMA20 > SMA50" : "SMA20 < SMA50") : "MA N/A";
+  document.getElementById("c-indicators").textContent = `RSI: ${rsi} • ${maStatus}`;
+  document.getElementById("reveal").classList.remove("show");
+  drawChart(days.slice(0, cutoff));
+  cardStartTime = Date.now();
+}
+
+/* =========================
+   Chart Renderer (Canvas)
+   ========================= */
+function drawChart(shownDays) {
+  const canvas = document.getElementById("chart");
+  const wrap = document.getElementById("chart-wrap");
+  const dpr = window.devicePixelRatio || 1;
+  const rect = wrap.getBoundingClientRect();
+  canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+  canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+  canvas.style.width = rect.width + "px";
+  canvas.style.height = rect.height + "px";
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const W = rect.width, H = rect.height;
+  const pad = { top: 10, right: 44, bottom: 24, left: 10 };
+  const chartH = H - pad.top - pad.bottom;
+  const chartW = W - pad.left - pad.right;
+  const highs = shownDays.map(d=>d.high), lows = shownDays.map(d=>d.low);
+  const maxP = Math.max(...highs), minP = Math.min(...lows);
+  const range = Math.max((maxP - minP), 0.0001);
+  const vols = shownDays.map(d=>d.volume);
+  const maxV = Math.max(...vols, 1);
+  function x(i) { return pad.left + (i / (shownDays.length - 1)) * chartW; }
+  function y(p) { return pad.top + (1 - (p - minP) / range) * chartH; }
+  function yVol(v) { return H - pad.bottom - (v / maxV) * (chartH * 0.18); }
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle = "rgba(148,163,184,0.10)";
+  ctx.lineWidth = 1;
+  for (let i=0;i<5;i++) {
+    const yy = pad.top + (i/4)*chartH;
+    ctx.beginPath(); ctx.moveTo(pad.left, yy); ctx.lineTo(W-pad.right, yy); ctx.stroke();
+  }
+  const drawLine = (key, color) => {
+    const pts = shownDays.map((d,i)=>({x:x(i), y:y(d[key])})).filter(p=>!isNaN(p.y));
+    if (pts.length < 2) return;
+    ctx.strokeStyle = color; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i=1;i<pts.length;i++) ctx.lineTo(pts[i].x, pts[i].y);
+    ctx.stroke();
+  };
+  drawLine("sma20", "#38bdf8");
+  drawLine("sma50", "#a78bfa");
+  const bw = Math.max(1, (chartW / shownDays.length) * 0.65);
+  shownDays.forEach((d,i) => {
+    const xx = x(i);
+    const isGreen = d.close >= d.open;
+    const color = isGreen ? "#22c55e" : "#ef4444";
+    ctx.strokeStyle = color; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(xx, y(d.high)); ctx.lineTo(xx, y(d.low)); ctx.stroke();
+    const top = y(Math.max(d.open, d.close));
+    const bot = y(Math.min(d.open, d.close));
+    const bh = Math.max(1, bot - top);
+    ctx.fillStyle = color;
+    ctx.fillRect(xx - bw/2, top, bw, bh);
+    const vTop = yVol(d.volume);
+    const vH = (H - pad.bottom) - vTop;
+    ctx.fillStyle = isGreen ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)";
+    ctx.fillRect(xx - bw/2, vTop, bw, vH);
+  });
+  ctx.fillStyle = "#94a3b8";
+  ctx.font = "11px -apple-system, BlinkMacSystemFont, sans-serif";
+  ctx.textAlign = "left"; ctx.textBaseline = "middle";
+  for (let i=0;i<5;i++) {
+    const price = minP + (1 - i/4) * range;
+    ctx.fillText(price.toFixed(2), W - pad.right + 6, pad.top + (i/4)*chartH);
+  }
+  ctx.textAlign = "center"; ctx.textBaseline = "top";
+  const step = Math.max(1, Math.floor(shownDays.length / 4));
+  for (let i=0;i<shownDays.length;i+=step) {
+    const label = String(shownDays[i].date).slice(5);
+    ctx.fillText(label, x(i), H - pad.bottom + 6);
+  }
+}
+
+/* =========================
+   Classification + Scoring
+   ========================= */
+async function handlePrediction(prediction) {
+  if (!currentCard) return;
+  const timeTaken = Math.round((Date.now() - cardStartTime) / 1000);
+  const actual = currentCard.actual;
+  let correct = false;
+  if (prediction === "invalid") {
+    if (Math.abs(actual.pct) < 2) { correct = true; score += 10; streak += 1; }
+    else { streak = 0; }
+  } else if (prediction === actual.label) {
+    correct = true; score += 10; streak += 1;
+  } else {
+    streak = 0;
+  }
+  if (streak > bestStreak) bestStreak = streak;
+  await addClassification({
+    user_id: "local-user",
+    symbol: currentCard.symbol,
+    date: currentCard.days[currentCard.cutoff-1].date,
+    prediction,
+    actual_result: actual.label,
+    actual_pct: +actual.pct.toFixed(2),
+    correct: prediction === actual.label || (prediction==="invalid" && Math.abs(actual.pct)<2),
+    setup_type: currentCard.setup,
+    time_taken_seconds: timeTaken,
+    created_at: new Date().toISOString(),
+  });
+  await setStat("score", score);
+  await setStat("streak", streak);
+  await setStat("bestStreak", bestStreak);
+  updateHeader();
+  showReveal(prediction, actual, correct);
+}
+
+function showReveal(prediction, actual, correct) {
+  const rev = document.getElementById("reveal");
+  const title = document.getElementById("r-title");
+  const move = document.getElementById("r-move");
+  const sub = document.getElementById("r-sub");
+  const predLabel = prediction === "invalid" ? "Invalid" : prediction;
+  const actLabel = actual.label;
+  const sign = actual.pct >= 0 ? "+" : "";
+  const color = actual.pct > 1 ? "var(--accent-bull)" : actual.pct < -1 ? "var(--accent-bear)" : "var(--accent-neutral)";
+  title.textContent = correct ? "Correct!" : "Wrong";
+  title.style.color = correct ? "var(--accent-bull)" : "var(--accent-bear)";
+  move.textContent = sign + actual.pct.toFixed(2) + "%";
+  move.style.color = color;
+  sub.textContent = `You predicted ${predLabel} • Actual was ${actLabel}`;
+  rev.classList.add("show");
+}
+
+document.getElementById("r-next").addEventListener("click", () => prepareCard());
+document.querySelectorAll("#controls .btn").forEach(b => {
+  b.addEventListener("click", () => handlePrediction(b.dataset.pred));
+});
+
+/* =========================
+   Swipe Gestures
+   ========================= */
+let touchStartX = 0, touchStartY = 0;
+const cardEl = document.getElementById("card");
+const hintLeft = document.getElementById("hint-left");
+const hintRight = document.getElementById("hint-right");
+const hintUp = document.getElementById("hint-up");
+if (cardEl) {
+  cardEl.addEventListener("touchstart", (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  }, {passive:true});
+  cardEl.addEventListener("touchmove", (e) => {
+    const x = e.changedTouches[0].screenX;
+    const y = e.changedTouches[0].screenY;
+    const dx = x - touchStartX;
+    const dy = touchStartY - y;
+    hintLeft.classList.remove("show");
+    hintRight.classList.remove("show");
+    hintUp.classList.remove("show");
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx > 40) hintRight.classList.add("show");
+      else if (dx < -40) hintLeft.classList.add("show");
+    } else {
+      if (dy > 40) hintUp.classList.add("show");
+    }
+  }, {passive:true});
+  cardEl.addEventListener("touchend", (e) => {
+    hintLeft.classList.remove("show");
+    hintRight.classList.remove("show");
+    hintUp.classList.remove("show");
+    const x = e.changedTouches[0].screenX;
+    const y = e.changedTouches[0].screenY;
+    const dx = x - touchStartX;
+    const dy = touchStartY - y;
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx > 60) handlePrediction("bullish");
+      else if (dx < -60) handlePrediction("bearish");
+    } else {
+      if (dy > 60) handlePrediction("invalid");
+    }
+  });
+}
+
+/* =========================
+   Stats
+   ========================= */
+async function renderStats() {
+  const rows = await getAllClassifications();
+  const total = rows.length;
+  const correctCount = rows.filter(r=>r.correct).length;
+  const winrate = total ? Math.round((correctCount/total)*100) + "%" : "—";
+  const avgTime = total ? Math.round(rows.reduce((s,r)=>s+(r.time_taken_seconds||0),0)/total) + "s" : "—";
+  document.getElementById("s-total").textContent = total;
+  document.getElementById("s-winrate").textContent = winrate;
+  document.getElementById("s-best").textContent = await getStat("bestStreak", 0);
+  document.getElementById("s-time").textContent = avgTime;
+  const tbody = document.querySelector("#history-table tbody");
+  const empty = document.getElementById("history-empty");
+  if (!total) {
+    tbody.innerHTML = "";
+    empty.style.display = "";
+    return;
+  }
+  empty.style.display = "none";
+  tbody.innerHTML = rows.slice(0,50).map(r => {
+    const predClass = r.prediction==="bullish"?"tag-bull":r.prediction==="bearish"?"tag-bear":r.prediction==="neutral"?"tag-neutral":"tag-invalid";
+    const resClass = r.correct?"tag-correct":"tag-wrong";
+    return `<tr>
+      <td>${String(r.date).slice(0,10)}</td>
+      <td>${r.symbol}</td>
+      <td><span class="tag ${predClass}">${r.prediction}</span></td>
+      <td><span class="tag ${r.actual_result==="bullish"?"tag-bull":r.actual_result==="bearish"?"tag-bear":"tag-neutral"}">${r.actual_result}</span></td>
+      <td><span class="tag ${resClass}">${r.correct?"Win":"Loss"}</span></td>
+    </tr>`;
+  }).join("");
+}
+
+function updateHeader() {
+  document.getElementById("h-score").textContent = score;
+  document.getElementById("h-streak").textContent = streak;
+}
+
+/* =========================
+   Init
+   ========================= */
+(async function init() {
+  await initStorage();
+  score = await getStat("score", 0);
+  streak = await getStat("streak", 0);
+  bestStreak = await getStat("bestStreak", 0);
+  updateHeader();
+  await loadPacks();
+  prepareCard();
+})();
+
+// Offline shell: only works when served over https (or localhost), never file://.
+if ("serviceWorker" in navigator && location.protocol !== "file:") {
+  navigator.serviceWorker.register("sw.js").catch((e) => console.warn("SW register failed", e));
+}
+
+</script>
+</body>
+</html>
